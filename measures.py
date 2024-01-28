@@ -3,27 +3,20 @@ import matplotlib.pyplot as plt
 
 from algorithms import find_coins_greedy, find_min_coins, coins
 
-sum_list = [2**x for x in range(5, 20)]
+sum_list = [3 + 2**x for x in range(5, 24)]
 
 
-def timeit_wrapper(func, *args, **kwargs):
-    def wrapped():
-        return func(*args, **kwargs)
-
-    return wrapped
-
-
-def timeit_measure(func, *args, **kwargs):
-    wrapped = timeit_wrapper(func, *args, **kwargs)
-    return timeit.timeit(wrapped, number=10)
+def execution_time(method, sum: int, coints: list):
+    setup_code = f"from algorithms import {method.__name__}"
+    execution_code = f"{method.__name__}({sum}, {coints})"
+    execution_time = timeit.timeit(
+        execution_code, setup=setup_code, globals=globals(), number=10
+    )
+    return execution_time
 
 
-def measure(func, sum_list):
-    return [timeit_measure(func, sum=sum, coins=coins) for sum in sum_list]
-
-
-greedy_results = measure(find_coins_greedy, sum_list)
-dp_results = measure(find_min_coins, sum_list)
+greedy_results = [execution_time(find_coins_greedy, sum, coins) for sum in sum_list]
+dp_results = [execution_time(find_min_coins, sum, coins) for sum in sum_list]
 
 
 # Build plot
